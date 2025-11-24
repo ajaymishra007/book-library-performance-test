@@ -1,7 +1,0 @@
-FROM justb4/jmeter:5.6.3
-
-# Install JMeter Plugin Manager and required plugins
-RUN wget https://jmeter-plugins.org/get/ -O /opt/jmeter/lib/ext/jmeter-plugins-manager.jar  && java -cp /opt/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMDInstaller  && /opt/jmeter/bin/PluginsManagerCMD.sh install jpgc-casutg,jpgc-tstm,jpgc-perc
-
-WORKDIR /tests
-CMD ["jmeter", "-n"]

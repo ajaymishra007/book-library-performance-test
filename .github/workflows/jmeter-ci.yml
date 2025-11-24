@@ -1,11 +1,39 @@
-name: JMeter CI
+name: JMeter Manual Execution
 
-on: [push, workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: "Select the JMeter test to execute"
+        required: true
+        type: choice
+        options:
+          - load
+          - spike-concurrency
+          - spike-ultimate
+          - chaos
 
 jobs:
-  test:
+  run-jmeter:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Run JMeter Docker
-        run: docker build -f docker/Dockerfile.spike -t jmeter-spike . && docker run jmeter-spike
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set docker-compose file
+        id: compose
+        run: |
+          if [ "${{ github.event.inputs.test_type }}" = "load" ]; then
+            echo "file=docker-compose-load.yml" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.test_type }}" = "spike-concurrency" ]; then
+            echo "file=docker-compose-spike-concurrency.yml" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.test_type }}" = "spike-ultimate" ]; then
+            echo "file=docker-compose-spike-ultimate.yml" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.test_type }}" = "chaos" ]; then
+            echo "file=docker-compose-chaos.yml" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run selected JMeter test
+        run: |
+          docker-compose -f ${{ steps.compose.outputs.file }} up --build

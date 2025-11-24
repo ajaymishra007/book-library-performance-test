@@ -1,0 +1,19 @@
+FROM justb4/jmeter:latest
+
+# Ensure target directories exist
+# RUN mkdir -p /opt/apache-jmeter-5.5/lib /opt/apache-jmeter-5.5/lib/ext
+
+# ✅ Copy your local plugins into JMeter
+COPY plugins/lib/ /opt/apache-jmeter-5.5/lib/
+COPY plugins/ext/ /opt/apache-jmeter-5.5/lib/ext
+
+
+# Copy your test files
+# --------------------------------------------------
+WORKDIR /tests
+COPY jmx/load_test.jmx /tests/
+COPY jmx/spike_test_concerrency_thread_group.jmx /tests/
+COPY jmx/spike_test_ultimate_thread_group.jmx /tests/
+COPY jmx/chaos_test.jmx /tests/
+
+ENTRYPOINT ["jmeter"]

@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  jmeter-spike:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.jmeter
+    image: jmeter-tests
+    container_name: jmeter-spike-runner
+    environment:
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./reports/spike:/tests/report
+    command:
+      - -n
+      - -t
+      - /tests/spike_test_ultimate_thread_group.jmx
+      - -l
+      - spike_results.jtl
+      - -e
+      - -o
+      - /tests/report

@@ -1,0 +1,34 @@
+FROM justb4/jmeter:5.6.2
+
+USER root
+
+WORKDIR /opt/apache-jmeter
+
+# --------------------------------------------------
+# Install JMeter Plugin Manager
+# --------------------------------------------------
+RUN curl -L https://jmeter-plugins.org/get/ -o lib/ext/jmeter-plugins-manager.jar && \
+    curl -L https://search.maven.org/remotecontent?filepath=kg/apc/cmdrunner/2.2/cmdrunner-2.2.jar \
+    -o lib/cmdrunner-2.2.jar
+
+# Install Plugins via CMD Runner
+RUN java -cp lib/ext/jmeter-plugins-manager.jar:lib/cmdrunner-2.2.jar \
+    org.jmeterplugins.repository.PluginManagerCMDInstaller
+
+# --------------------------------------------------
+# Install Required Plugins
+# --------------------------------------------------
+RUN /opt/apache-jmeter/bin/PluginsManagerCMD.sh install \
+    jpgc-percentile \
+    jpgc-casutg \
+    jpgc-ultimatethreadgroup
+
+# --------------------------------------------------
+# Copy your test files
+# --------------------------------------------------
+WORKDIR /tests
+COPY load_test.jmx /tests/
+COPY spike_test.jmx /tests/
+COPY chaos_test.jmx /tests/
+
+ENTRYPOINT ["jmeter"]

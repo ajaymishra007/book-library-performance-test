@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  jmeter-load:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.jmeter
+    image: jmeter-tests
+    container_name: jmeter-chaos-runner
+    environment:
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./reports/load:/tests/report
+    command:
+      - -n
+      - -t
+      - /tests/chaos_test.jmx
+      - -l
+      - load_results.jtl
+      - -e
+      - -o
+      - /tests/report

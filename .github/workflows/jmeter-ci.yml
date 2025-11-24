@@ -34,6 +34,12 @@ jobs:
             echo "file=docker-compose-chaos.yml" >> $GITHUB_OUTPUT
           fi
 
+      - name: Verify Docker
+        run: docker --version
+
+      - name: Verify Docker Compose
+        run: docker compose version
+
       - name: Run selected JMeter test
         run: |
-          docker-compose -f ${{ steps.compose.outputs.file }} up --build
+          docker compose -f ${{ steps.compose.outputs.file }} up --build
